@@ -1,0 +1,10 @@
+FROM bitnami/spark:3.5.1
+
+WORKDIR /opt/cloud-course
+COPY spark/analysis.py /opt/cloud-course/analysis.py
+COPY douban_movies.csv /opt/cloud-course/douban_movies.csv
+
+ENV DATA_PATH=/opt/cloud-course/douban_movies.csv
+
+USER 1001
+CMD ["spark-submit", "--master", "local[*]", "/opt/cloud-course/analysis.py"]

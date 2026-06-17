@@ -1,0 +1,62 @@
+name: build-push-deploy
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SWR_REGISTRY: swr.cn-north-4.myhuaweicloud.com
+  SWR_ORG: cloud-course-2023112554
+  KUBECONFIG: ${{ github.workspace }}/kubeconfig.yaml
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Docker login to Huawei SWR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.SWR_REGISTRY }}
+          username: ${{ secrets.SWR_USERNAME }}
+          password: ${{ secrets.SWR_PASSWORD }}
+
+      - name: Build backend image
+        run: |
+          docker build -f app/backend/Dockerfile.backend \
+            -t $SWR_REGISTRY/$SWR_ORG/backend:${{ github.sha }} \
+            -t $SWR_REGISTRY/$SWR_ORG/backend:latest \
+            app/backend
+
+      - name: Build frontend image
+        run: |
+          docker build -f app/frontend/Dockerfile.frontend \
+            -t $SWR_REGISTRY/$SWR_ORG/frontend:${{ github.sha }} \
+            -t $SWR_REGISTRY/$SWR_ORG/frontend:latest \
+            app/frontend
+
+      - name: Push images
+        run: |
+          docker push $SWR_REGISTRY/$SWR_ORG/backend:${{ github.sha }}
+          docker push $SWR_REGISTRY/$SWR_ORG/backend:latest
+          docker push $SWR_REGISTRY/$SWR_ORG/frontend:${{ github.sha }}
+          docker push $SWR_REGISTRY/$SWR_ORG/frontend:latest
+
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBECONFIG_B64 }}" | base64 -d > "$KUBECONFIG"
+          kubectl config get-contexts
+
+      - name: Update Kubernetes deployments
+        run: |
+          kubectl set image deployment/backend backend=$SWR_REGISTRY/$SWR_ORG/backend:${{ github.sha }}
+          kubectl set image deployment/frontend frontend=$SWR_REGISTRY/$SWR_ORG/frontend:${{ github.sha }}
+          kubectl rollout status deployment/backend --timeout=240s
+          kubectl rollout status deployment/frontend --timeout=240s
+          kubectl get deploy backend frontend -o wide

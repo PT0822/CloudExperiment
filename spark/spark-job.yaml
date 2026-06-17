@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: spark-douban-analysis
+  namespace: default
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: spark-douban-analysis
+    spec:
+      restartPolicy: Never
+      imagePullSecrets:
+        - name: swr-secret
+      containers:
+        - name: spark-analysis
+          image: swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112554/spark-analysis:v1
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2"
+              memory: "2Gi"

@@ -1,0 +1,33 @@
+# Cloud credentials and cluster access
+cloud-course-2023112554-kubeconfig.yaml
+*kubeconfig*.yaml
+*.kubeconfig
+*.pem
+*.key
+*.crt
+.env
+.env.*
+
+# Course/private evidence and local deliverables
+evidence/
+report/
+*.png
+*.jpg
+*.jpeg
+*.pdf
+spark_analysis_result.txt
+课程设计任务书-final.pdf
+
+# Large/local data and archives
+douban_movies.csv
+*.zip
+*.tar.gz
+
+# Local caches
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+
+# Local downloaded tools
+tools/
