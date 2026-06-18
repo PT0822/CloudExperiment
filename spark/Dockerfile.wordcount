@@ -1,0 +1,2 @@
+FROM apache/spark:3.5.1-python3
+COPY spark/wordcount.py /opt/spark/work/wordcount.py
