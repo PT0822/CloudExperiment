@@ -13,6 +13,8 @@ spec:
       labels:
         app: frontend
     spec:
+      imagePullSecrets:
+        - name: swr-image-pull
       containers:
         - name: frontend
           image: swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112554/frontend:v1

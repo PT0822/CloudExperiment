@@ -53,6 +53,17 @@ jobs:
           echo "${{ secrets.KUBECONFIG_B64 }}" | base64 -d > "$KUBECONFIG"
           kubectl config get-contexts
 
+      - name: Configure image pull secret
+        run: |
+          kubectl create secret docker-registry swr-image-pull \
+            --docker-server=$SWR_REGISTRY \
+            --docker-username='${{ secrets.SWR_USERNAME }}' \
+            --docker-password='${{ secrets.SWR_PASSWORD }}' \
+            --dry-run=client -o yaml | kubectl apply -f -
+          kubectl patch deployment/backend deployment/frontend \
+            --type merge \
+            -p '{"spec":{"template":{"spec":{"imagePullSecrets":[{"name":"swr-image-pull"}]}}}}'
+
       - name: Update Kubernetes deployments
         run: |
           kubectl set image deployment/backend backend=$SWR_REGISTRY/$SWR_ORG/backend:${{ github.sha }}
