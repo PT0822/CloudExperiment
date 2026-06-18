@@ -43,10 +43,22 @@ jobs:
 
       - name: Push images
         run: |
-          docker push $SWR_REGISTRY/$SWR_ORG/backend:${{ github.sha }}
-          docker push $SWR_REGISTRY/$SWR_ORG/backend:latest
-          docker push $SWR_REGISTRY/$SWR_ORG/frontend:${{ github.sha }}
-          docker push $SWR_REGISTRY/$SWR_ORG/frontend:latest
+          retry_push() {
+            image="$1"
+            for attempt in 1 2 3; do
+              echo "Pushing ${image}, attempt ${attempt}/3"
+              if docker push "${image}"; then
+                return 0
+              fi
+              sleep $((attempt * 15))
+            done
+            return 1
+          }
+
+          retry_push $SWR_REGISTRY/$SWR_ORG/backend:${{ github.sha }}
+          retry_push $SWR_REGISTRY/$SWR_ORG/backend:latest
+          retry_push $SWR_REGISTRY/$SWR_ORG/frontend:${{ github.sha }}
+          retry_push $SWR_REGISTRY/$SWR_ORG/frontend:latest
 
       - name: Configure kubectl
         run: |
