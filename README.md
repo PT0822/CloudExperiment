@@ -98,3 +98,32 @@ kubectl get pods -w
 8. HPA 扩容与缩容。
 9. Spark Driver/Executor Pod 与分析输出。
 10. Pandas vs PySpark 性能对比图。
+
+## 教师批改入口（最终版）
+
+本仓库用于课程设计代码与配置审阅。报告 PDF 中的截图、日志和运行证据由 `evidence/` 本地目录整理，因包含大量截图和日志，默认不提交到 GitHub；仓库中保留全部修改后的 YAML、Dockerfile、核心 Python 代码和 CI/CD workflow，满足任务书附录要求。
+
+### 建议审阅顺序
+
+1. `项目解说_报告撰写指南.md`：完整报告撰写说明、任务书逐项核对、附录文件索引。
+2. `REPORT_EVIDENCE_MAP.md`：报告证据映射表。
+3. `SUBMISSION_CHECKLIST.md`：提交前检查清单。
+4. `app/`：前后端应用源码、Dockerfile、本地 docker compose。
+5. `k8s/`：第一部分 Kubernetes 资源 YAML。
+6. `spark/`：第二部分 Spark 分析代码、SparkApplication、性能对比代码。
+7. `addons/`：三个附加题，包含监控、CI/CD 说明、MQTT 云边模拟。
+8. `.github/workflows/build-push-deploy.yml`：GitHub Actions CI/CD 流水线。
+
+### 任务书附录对应文件
+
+| 任务书附录要求 | 本仓库对应位置 |
+|---|---|
+| 全部修改后的 YAML 文件 | `k8s/*.yaml`、`spark/*.yaml`、`addons/monitoring/*.yaml`、`addons/edge-mqtt/cloud/*.yaml`、`.github/workflows/build-push-deploy.yml` |
+| Dockerfile | `app/backend/Dockerfile.backend`、`app/frontend/Dockerfile.frontend`、`spark/Dockerfile.spark`、`spark/Dockerfile.wordcount`、`addons/edge-mqtt/cloud/Dockerfile` |
+| 核心 Python 代码 | `app/backend/app.py`、`spark/analysis.py`、`spark/pandas_compare.py`、`spark/wordcount.py`、`addons/edge-mqtt/cloud/mqtt_to_redis.py`、`addons/edge-mqtt/edge/sensor_publisher.py` |
+| CI/CD | `.github/workflows/build-push-deploy.yml` |
+| 报告撰写说明 | `项目解说_报告撰写指南.md` |
+
+### 安全说明
+
+仓库不提交 kubeconfig、SWR 密码、华为云账号密码、GitHub token、原始大数据集和大量截图证据。`k8s/01-configmap-secret.yaml` 中的 Secret 采用 Kubernetes Secret 的 base64 字段形式，仅用于演示配置结构；正式生产环境应改用外部 Secret 管理。
