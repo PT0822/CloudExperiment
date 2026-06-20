@@ -1,13 +1,15 @@
 apiVersion: sparkoperator.k8s.io/v1beta2
 kind: SparkApplication
 metadata:
-  name: douban-movie-analysis
+  name: pyspark-analysis
   namespace: default
 spec:
   type: Python
   pythonVersion: "3"
   mode: cluster
-  image: apache/spark:3.5.1-python3
+  # Taskbook Appendix B requires replacing <YOUR_ORG> with the SWR org.
+  # Build this image with spark/Dockerfile.spark and push it as pyspark:3.4.
+  image: swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112554/pyspark:3.4
   imagePullPolicy: IfNotPresent
   mainApplicationFile: local:///opt/spark/work/analysis.py
   sparkVersion: "3.4.0"
@@ -27,4 +29,3 @@ spec:
     cores: 1
     instances: 2
     memory: "1g"
-

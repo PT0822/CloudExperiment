@@ -105,15 +105,15 @@ kubectl get pods -w
 
 ### 建议审阅顺序
 
-1. `项目解说_报告撰写指南.md`：完整报告撰写说明、任务书逐项核对、附录文件索引。
-2. `REPORT_EVIDENCE_MAP.md`：报告证据映射表。
-3. `SUBMISSION_CHECKLIST.md`：提交前检查清单。
-4. `app/`：前后端应用源码、Dockerfile、本地 docker compose。
-5. `k8s/`：第一部分 Kubernetes 资源 YAML。
-6. `spark/`：第二部分 Spark 分析代码、SparkApplication、性能对比代码。
-7. `addons/`：三个附加题，包含监控、CI/CD 说明、MQTT 云边模拟。
-8. `.github/workflows/build-push-deploy.yml`：GitHub Actions CI/CD 流水线。
-
+1. `APPENDIX_INDEX.md`：任务书第六部分附录索引，列出 YAML、Dockerfile 和核心 Python 代码。
+2. `项目解说_报告撰写指南.md`：完整报告撰写说明、任务书逐项核对、附录文件索引。
+3. `REPORT_EVIDENCE_MAP.md`：报告证据映射表。
+4. `SUBMISSION_CHECKLIST.md`：提交前检查清单。
+5. `app/`：前后端应用源码、Dockerfile、本地 docker compose。
+6. `k8s/`：第一部分 Kubernetes 资源 YAML。
+7. `spark/`：第二部分 Spark 分析代码、SparkApplication、性能对比代码。
+8. `addons/`：三个附加题，包含监控、CI/CD 说明、MQTT 云边模拟。
+9. `.github/workflows/build-push-deploy.yml`：GitHub Actions CI/CD 流水线。
 ### 任务书附录对应文件
 
 | 任务书附录要求 | 本仓库对应位置 |
@@ -127,3 +127,5 @@ kubectl get pods -w
 ### 安全说明
 
 仓库不提交 kubeconfig、SWR 密码、华为云账号密码、GitHub token、原始大数据集和大量截图证据。`k8s/01-configmap-secret.yaml` 中的 Secret 采用 Kubernetes Secret 的 base64 字段形式，仅用于演示配置结构；正式生产环境应改用外部 Secret 管理。
+
+

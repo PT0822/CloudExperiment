@@ -1,10 +1,9 @@
-FROM bitnami/spark:3.5.1
+FROM apache/spark:3.5.1-python3
 
-WORKDIR /opt/cloud-course
-COPY spark/analysis.py /opt/cloud-course/analysis.py
-COPY douban_movies.csv /opt/cloud-course/douban_movies.csv
+# The SparkApplication in Appendix B loads this file through
+# local:///opt/spark/work/analysis.py, so the analysis code must be baked into
+# the submitted PySpark image rather than referenced from the host filesystem.
+WORKDIR /opt/spark/work
+COPY spark/analysis.py /opt/spark/work/analysis.py
 
-ENV DATA_PATH=/opt/cloud-course/douban_movies.csv
-
-USER 1001
-CMD ["spark-submit", "--master", "local[*]", "/opt/cloud-course/analysis.py"]
+USER 185

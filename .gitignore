@@ -31,3 +31,5 @@ Thumbs.db
 
 # Local downloaded tools
 tools/
+
+audit_after_grade/
