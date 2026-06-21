@@ -1,4 +1,4 @@
-name: build-push-deploy
+﻿name: build-push-deploy
 
 on:
   push:
@@ -10,17 +10,23 @@ permissions:
 
 env:
   SWR_REGISTRY: swr.cn-north-4.myhuaweicloud.com
-  SWR_ORG: cloud-course-2023112554
+  SWR_ORG: cloud-course-2023112557
+  K8S_NAMESPACE: default
   KUBECONFIG: ${{ github.workspace }}/kubeconfig.yaml
 
 jobs:
   build-push-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Docker login to Huawei SWR
+      - name: Generate image tag
+        run: |
+          echo "IMAGE_TAG=${GITHUB_SHA::12}" >> "$GITHUB_ENV"
+          echo "image tag=${GITHUB_SHA::12}"
+
+      - name: Log in to Huawei Cloud SWR
         uses: docker/login-action@v3
         with:
           registry: ${{ env.SWR_REGISTRY }}
@@ -30,56 +36,52 @@ jobs:
       - name: Build backend image
         run: |
           docker build -f app/backend/Dockerfile.backend \
-            -t $SWR_REGISTRY/$SWR_ORG/backend:${{ github.sha }} \
+            -t $SWR_REGISTRY/$SWR_ORG/backend:$IMAGE_TAG \
             -t $SWR_REGISTRY/$SWR_ORG/backend:latest \
             app/backend
 
       - name: Build frontend image
         run: |
           docker build -f app/frontend/Dockerfile.frontend \
-            -t $SWR_REGISTRY/$SWR_ORG/frontend:${{ github.sha }} \
+            -t $SWR_REGISTRY/$SWR_ORG/frontend:$IMAGE_TAG \
             -t $SWR_REGISTRY/$SWR_ORG/frontend:latest \
             app/frontend
 
-      - name: Push images
+      - name: Push images to SWR
         run: |
-          retry_push() {
-            image="$1"
-            for attempt in 1 2 3; do
-              echo "Pushing ${image}, attempt ${attempt}/3"
-              if docker push "${image}"; then
-                return 0
-              fi
-              sleep $((attempt * 15))
-            done
-            return 1
-          }
-
-          retry_push $SWR_REGISTRY/$SWR_ORG/backend:${{ github.sha }}
-          retry_push $SWR_REGISTRY/$SWR_ORG/backend:latest
-          retry_push $SWR_REGISTRY/$SWR_ORG/frontend:${{ github.sha }}
-          retry_push $SWR_REGISTRY/$SWR_ORG/frontend:latest
+          docker push $SWR_REGISTRY/$SWR_ORG/backend:$IMAGE_TAG
+          docker push $SWR_REGISTRY/$SWR_ORG/backend:latest
+          docker push $SWR_REGISTRY/$SWR_ORG/frontend:$IMAGE_TAG
+          docker push $SWR_REGISTRY/$SWR_ORG/frontend:latest
 
       - name: Configure kubectl
         run: |
           echo "${{ secrets.KUBECONFIG_B64 }}" | base64 -d > "$KUBECONFIG"
           kubectl config get-contexts
+          kubectl get nodes -o wide
 
-      - name: Configure image pull secret
+      - name: Create SWR image pull secret
         run: |
-          kubectl create secret docker-registry swr-image-pull \
+          kubectl -n $K8S_NAMESPACE create secret docker-registry swr-image-pull \
             --docker-server=$SWR_REGISTRY \
             --docker-username='${{ secrets.SWR_USERNAME }}' \
             --docker-password='${{ secrets.SWR_PASSWORD }}' \
             --dry-run=client -o yaml | kubectl apply -f -
-          kubectl patch deployment/backend deployment/frontend \
+
+          kubectl -n $K8S_NAMESPACE patch deployment/backend deployment/frontend \
             --type merge \
             -p '{"spec":{"template":{"spec":{"imagePullSecrets":[{"name":"swr-image-pull"}]}}}}'
 
-      - name: Update Kubernetes deployments
+      - name: Update CCE deployments
         run: |
-          kubectl set image deployment/backend backend=$SWR_REGISTRY/$SWR_ORG/backend:${{ github.sha }}
-          kubectl set image deployment/frontend frontend=$SWR_REGISTRY/$SWR_ORG/frontend:${{ github.sha }}
-          kubectl rollout status deployment/backend --timeout=240s
-          kubectl rollout status deployment/frontend --timeout=240s
-          kubectl get deploy backend frontend -o wide
+          kubectl -n $K8S_NAMESPACE set image deployment/backend backend=$SWR_REGISTRY/$SWR_ORG/backend:$IMAGE_TAG 
+          kubectl -n $K8S_NAMESPACE set image deployment/frontend frontend=$SWR_REGISTRY/$SWR_ORG/frontend:$IMAGE_TAG
+
+          kubectl -n $K8S_NAMESPACE rollout status deployment/backend --timeout=240s
+          kubectl -n $K8S_NAMESPACE rollout status deployment/frontend --timeout=240s
+
+      - name: Show deployed image tags
+        run: |
+          kubectl -n $K8S_NAMESPACE get deployment backend frontend \
+            -o custom-columns=NAME:.metadata.name,IMAGE:.spec.template.spec.containers[*].image,READY:.status.readyReplicas,UPDATED:.status.updatedReplicas
+          kubectl -n $K8S_NAMESPACE get pods -o wide
