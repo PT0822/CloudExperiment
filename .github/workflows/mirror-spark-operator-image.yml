@@ -1,0 +1,36 @@
+name: mirror-spark-operator-image
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SWR_REGISTRY: swr.cn-north-4.myhuaweicloud.com
+  SWR_ORG: cloud-course-2023112557
+  SOURCE_IMAGE: ghcr.io/kubeflow/spark-operator/controller:2.5.1
+  TARGET_IMAGE: swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112557/spark-operator-controller:2.5.1
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to Huawei Cloud SWR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.SWR_REGISTRY }}
+          username: ${{ secrets.SWR_USERNAME }}
+          password: ${{ secrets.SWR_PASSWORD }}
+
+      - name: Pull Spark Operator image
+        run: docker pull "$SOURCE_IMAGE"
+
+      - name: Tag image for SWR
+        run: docker tag "$SOURCE_IMAGE" "$TARGET_IMAGE"
+
+      - name: Push image to SWR
+        run: docker push "$TARGET_IMAGE"
+
+      - name: Show mirrored image
+        run: echo "$TARGET_IMAGE"
