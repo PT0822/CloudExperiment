@@ -1,0 +1,38 @@
+name: build-pandas-a3-image
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SWR_REGISTRY: swr.cn-north-4.myhuaweicloud.com
+  SWR_ORG: cloud-course-2023112557
+  IMAGE_NAME: pandas-a3
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Log in to Huawei Cloud SWR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.SWR_REGISTRY }}
+          username: ${{ secrets.SWR_USERNAME }}
+          password: ${{ secrets.SWR_PASSWORD }}
+
+      - name: Build Pandas A-3 image
+        run: |
+          docker build -f spark/Dockerfile.pandas-a3 \
+            -t $SWR_REGISTRY/$SWR_ORG/$IMAGE_NAME:latest \
+            .
+
+      - name: Push Pandas A-3 image
+        run: docker push $SWR_REGISTRY/$SWR_ORG/$IMAGE_NAME:latest
+
+      - name: Show image
+        run: echo "$SWR_REGISTRY/$SWR_ORG/$IMAGE_NAME:latest"
