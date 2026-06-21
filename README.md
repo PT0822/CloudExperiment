@@ -32,7 +32,6 @@
 
 - 第一部分云计算平台搭建已完成，包含镜像构建与推送、CCE 部署、Redis 持久化、ConfigMap/Secret、HPA 等。
 - 第二部分选择 Spark 方向 A。`spark/analysis.py` 覆盖数据清洗、GROUP BY 聚合、ORDER BY Top-N、按年份时间趋势、窗口函数查询。
-- A-3 性能对比保留 Pandas 与 PySpark local 并行度趋势证据；报告中已说明该口径不等同于完整 SparkApplication executorInstances 对比。
 - 附加题最终提交附加题 1 监控系统和附加题 2 CI/CD 流水线。
 
 ## 安全说明
