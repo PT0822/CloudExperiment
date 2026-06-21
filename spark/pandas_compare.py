@@ -23,7 +23,7 @@ def timed(label, func):
 
 def pandas_genre_top10(data_path: Path):
     df = pd.read_csv(data_path)
-    df = df.dropna(subset=["rating_score", "genres"])
+    df = df.dropna(subset=["year", "rating_score", "genres"])
     df["genre"] = df["genres"].astype(str).str.split("/")
     exploded = df.explode("genre")
     result = (

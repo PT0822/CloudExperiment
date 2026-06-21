@@ -28,7 +28,7 @@ grafana:
     port: 80
     annotations:
       kubernetes.io/elb.class: union
-      kubernetes.io/elb.autocreate: '{"type":"public","bandwidth_name":"bandwidth-grafana-course-2023112554","bandwidth_chargemode":"bandwidth","bandwidth_size":1,"bandwidth_sharetype":"PER","eip_type":"5_bgp","name":"elb-grafana-course-2023112554"}'
+      kubernetes.io/elb.autocreate: '{"type":"public","bandwidth_name":"bandwidth-grafana-course-2023112557","bandwidth_chargemode":"bandwidth","bandwidth_size":1,"bandwidth_sharetype":"PER","eip_type":"5_bgp","name":"elb-grafana-course-2023112557"}'
       kubernetes.io/elb.enterpriseID: "0"
   resources:
     requests:

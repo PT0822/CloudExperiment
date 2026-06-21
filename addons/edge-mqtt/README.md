@@ -15,8 +15,8 @@
 
 ```bash
 cd addons/edge-mqtt/cloud
-docker build -t mqtt-to-redis:v1 -t swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112554/mqtt-to-redis:v1 .
-docker push swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112554/mqtt-to-redis:v1
+docker build -t mqtt-to-redis:v1 -t swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112557/mqtt-to-redis:v1 .
+docker push swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112557/mqtt-to-redis:v1
 ```
 
 CloudShell 部署：

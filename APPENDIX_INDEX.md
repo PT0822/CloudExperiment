@@ -21,11 +21,12 @@
 
 | 类型 | 文件 | 对应任务书模板/评分点 |
 |---|---|---|
-| Spark 镜像 | `spark/Dockerfile.spark` | 将 `analysis.py` 放入 `/opt/spark/work/analysis.py`，供 SparkApplication 使用 |
+| Spark 镜像 | `spark/Dockerfile.spark` | 将 `analysis.py`、`perf_genre_topn.py`、`wordcount.py` 放入 `/opt/spark/work/`，供 SparkApplication 使用 |
 | SparkApplication | `spark/sparkapplication.yaml` | 附录 B-1，SWR PySpark 镜像、executor instances=2、memory=1g |
-| WordCount 示例 | `spark/wordcount.py`, `spark/Dockerfile.wordcount` | A-0 Driver/Executor Completed 验证 |
-| 豆瓣分析核心代码 | `spark/analysis.py` | A-1/A-2，清洗和 4 个 SQL/DataFrame 查询 |
-| 性能对比代码 | `spark/pandas_compare.py` | A-3，Pandas 单机 vs PySpark executor=1/2，生成对比图 |
+| WordCount 示例 | `spark/wordcount.py`, `spark/sparkapplication-wordcount.yaml`, `spark/Dockerfile.wordcount` | A-0 Driver/Executor Completed 验证；SparkApplication 模板保留 executor instances=2、memory=1g |
+| 豆瓣分析核心代码 | `spark/analysis.py` | A-1/A-2，清洗后保留 56889 行，并输出 4 个 SQL/DataFrame 查询 |
+| 性能对比代码 | `spark/pandas_compare.py`, `spark/perf_genre_topn.py` | A-3，同一 Genre 聚合查询的 Pandas 单机与 PySpark 对比 |
+| A-3 SparkApplication | `spark/sparkapplication-perf-exec1.yaml`, `spark/sparkapplication-perf-exec2.yaml` | A-3，分别设置 executor.instances=1 和 executor.instances=2 |
 | CloudShell 兜底 Job | `spark/spark-job.yaml`, `spark_cloudshell_package/` | 当 SparkApplication 受镜像/资源限制时的云端可运行作业证据 |
 
 ## 附加题

@@ -17,7 +17,7 @@ spec:
         - name: swr-image-pull
       containers:
         - name: frontend
-          image: swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112554/frontend:v1
+          image: swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112557/frontend:v1
           ports:
             - containerPort: 80
           volumeMounts:
@@ -28,4 +28,3 @@ spec:
         - name: nginx-conf
           configMap:
             name: frontend-nginx-conf
-

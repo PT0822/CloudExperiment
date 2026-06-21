@@ -1,17 +1,15 @@
 apiVersion: sparkoperator.k8s.io/v1beta2
 kind: SparkApplication
 metadata:
-  name: pyspark-analysis
+  name: spark-perf-exec1
   namespace: default
 spec:
   type: Python
   pythonVersion: "3"
   mode: cluster
-  # Taskbook Appendix B requires replacing <YOUR_ORG> with the SWR org.
-  # Build this image with spark/Dockerfile.spark and push it as pyspark:3.4.
   image: swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112557/pyspark:3.4
   imagePullPolicy: IfNotPresent
-  mainApplicationFile: local:///opt/spark/work/analysis.py
+  mainApplicationFile: local:///opt/spark/work/perf_genre_topn.py
   sparkVersion: "3.4.0"
   restartPolicy:
     type: Never
@@ -27,5 +25,5 @@ spec:
         value: "s3a://cloud-course-2023112557/douban_movies.csv"
   executor:
     cores: 1
-    instances: 2
+    instances: 1
     memory: "1g"

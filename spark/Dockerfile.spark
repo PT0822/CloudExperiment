@@ -5,5 +5,7 @@ FROM apache/spark:3.5.1-python3
 # the submitted PySpark image rather than referenced from the host filesystem.
 WORKDIR /opt/spark/work
 COPY spark/analysis.py /opt/spark/work/analysis.py
+COPY spark/perf_genre_topn.py /opt/spark/work/perf_genre_topn.py
+COPY spark/wordcount.py /opt/spark/work/wordcount.py
 
 USER 185

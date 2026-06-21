@@ -9,7 +9,10 @@ TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "${TMP_DIR}"' EXIT
 
 cp "${ROOT}"/k8s/*.yaml "${TMP_DIR}/"
-find "${TMP_DIR}" -type f -name '*.yaml' -print0 | xargs -0 sed -i "s#swr.cn-north-4.myhuaweicloud.com/YOUR_ORG#swr.${SWR_REGION}.myhuaweicloud.com/${SWR_ORG}#g"
+find "${TMP_DIR}" -type f -name '*.yaml' -print0 | xargs -0 sed -i \
+  -e "s#swr.cn-north-4.myhuaweicloud.com/YOUR_ORG#swr.${SWR_REGION}.myhuaweicloud.com/${SWR_ORG}#g" \
+  -e "s#swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112554#swr.${SWR_REGION}.myhuaweicloud.com/${SWR_ORG}#g" \
+  -e "s#swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112557#swr.${SWR_REGION}.myhuaweicloud.com/${SWR_ORG}#g"
 
 kubectl apply -f "${TMP_DIR}/01-configmap-secret.yaml"
 kubectl apply -f "${TMP_DIR}/02-pvc.yaml"

@@ -15,7 +15,7 @@ spec:
         - name: swr-secret
       containers:
         - name: spark-analysis
-          image: swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112554/spark-analysis:v1
+          image: swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112557/spark-analysis:v1
           imagePullPolicy: IfNotPresent
           resources:
             requests:

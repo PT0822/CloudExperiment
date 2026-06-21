@@ -49,14 +49,30 @@ jobs:
 
       - name: Push images to SWR
         run: |
-          docker push $SWR_REGISTRY/$SWR_ORG/backend:$IMAGE_TAG
-          docker push $SWR_REGISTRY/$SWR_ORG/backend:latest
-          docker push $SWR_REGISTRY/$SWR_ORG/frontend:$IMAGE_TAG
-          docker push $SWR_REGISTRY/$SWR_ORG/frontend:latest
+          retry_push() {
+            image="$1"
+            for attempt in 1 2 3; do
+              echo "Pushing ${image}, attempt ${attempt}/3"
+              if docker push "${image}"; then
+                return 0
+              fi
+              sleep $((attempt * 15))
+            done
+            return 1
+          }
+
+          retry_push $SWR_REGISTRY/$SWR_ORG/backend:$IMAGE_TAG
+          retry_push $SWR_REGISTRY/$SWR_ORG/backend:latest
+          retry_push $SWR_REGISTRY/$SWR_ORG/frontend:$IMAGE_TAG
+          retry_push $SWR_REGISTRY/$SWR_ORG/frontend:latest
 
       - name: Configure kubectl
         run: |
           echo "${{ secrets.KUBECONFIG_B64 }}" | base64 -d > "$KUBECONFIG"
+          if grep -qE 'client-certificate:|client-key:|certificate-authority:' "$KUBECONFIG"; then
+            echo "::error::KUBECONFIG_B64 must be generated from a flattened kubeconfig. Run: kubectl config view --raw --flatten --minify | base64 -w 0"
+            exit 1
+          fi
           kubectl config get-contexts
           kubectl get nodes -o wide
 
@@ -74,8 +90,13 @@ jobs:
 
       - name: Update CCE deployments
         run: |
-          kubectl -n $K8S_NAMESPACE set image deployment/backend backend-app=$SWR_REGISTRY/$SWR_ORG/backend:$IMAGE_TAG
-          kubectl -n $K8S_NAMESPACE set image deployment/frontend frontend=$SWR_REGISTRY/$SWR_ORG/frontend:$IMAGE_TAG
+          BACKEND_CONTAINER=$(kubectl -n $K8S_NAMESPACE get deployment/backend -o jsonpath='{.spec.template.spec.containers[0].name}')
+          FRONTEND_CONTAINER=$(kubectl -n $K8S_NAMESPACE get deployment/frontend -o jsonpath='{.spec.template.spec.containers[0].name}')
+          echo "backend container=${BACKEND_CONTAINER}"
+          echo "frontend container=${FRONTEND_CONTAINER}"
+
+          kubectl -n $K8S_NAMESPACE set image deployment/backend ${BACKEND_CONTAINER}=$SWR_REGISTRY/$SWR_ORG/backend:$IMAGE_TAG
+          kubectl -n $K8S_NAMESPACE set image deployment/frontend ${FRONTEND_CONTAINER}=$SWR_REGISTRY/$SWR_ORG/frontend:$IMAGE_TAG
 
           kubectl -n $K8S_NAMESPACE rollout status deployment/backend --timeout=240s
           kubectl -n $K8S_NAMESPACE rollout status deployment/frontend --timeout=240s
