@@ -74,7 +74,7 @@ jobs:
 
       - name: Update CCE deployments
         run: |
-          kubectl -n $K8S_NAMESPACE set image deployment/backend backend=$SWR_REGISTRY/$SWR_ORG/backend:$IMAGE_TAG 
+          kubectl -n $K8S_NAMESPACE set image deployment/backend backend-app=$SWR_REGISTRY/$SWR_ORG/backend:$IMAGE_TAG
           kubectl -n $K8S_NAMESPACE set image deployment/frontend frontend=$SWR_REGISTRY/$SWR_ORG/frontend:$IMAGE_TAG
 
           kubectl -n $K8S_NAMESPACE rollout status deployment/backend --timeout=240s
