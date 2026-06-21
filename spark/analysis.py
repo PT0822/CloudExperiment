@@ -42,6 +42,12 @@ missing_exprs = [
 ]
 raw.select(missing_exprs).show(truncate=False)
 
+print("=== Cleaning Strategy ===")
+print("dropna fields: year, rating_score, genres")
+print("reason: these fields are required by year trend, score ranking, and genre aggregation")
+print("fillna fields: summary='暂无简介', directors='未知导演', countries='未知地区'")
+print("reason: descriptive fields are not core numeric keys, so filling preserves usable rows")
+
 # Keep only rows that can participate in year trend, score analysis, and genre
 # aggregation. Other descriptive fields are filled to preserve usable records.
 clean = raw.dropna(subset=["year", "rating_score", "genres"])
@@ -93,6 +99,10 @@ timed(
         """
         SELECT title, original_title, year, rating_score, rating_count, collect_count
         FROM movies
+        WHERE rating_count >= 1000
+          AND title NOT RLIKE '演唱会|音乐会|视频日志|纪录片|Concert|concert|Video Diary'
+          AND original_title NOT RLIKE 'Concert|concert|Video Diary'
+          AND genres NOT RLIKE '纪录片|音乐'
         ORDER BY rating_score DESC, rating_count DESC
         LIMIT 10
         """
