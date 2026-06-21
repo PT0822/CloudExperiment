@@ -23,12 +23,12 @@ metadata:
     kubernetes.io/elb.class: union
     kubernetes.io/elb.autocreate: '{
       "type": "public",
-      "bandwidth_name": "bandwidth-backend-course-2023112554",
+      "bandwidth_name": "bandwidth-backend-course-2023112557",
       "bandwidth_chargemode": "bandwidth",
       "bandwidth_size": 1,
       "bandwidth_sharetype": "PER",
       "eip_type": "5_bgp",
-      "name": "elb-backend-course-2023112554"
+      "name": "elb-backend-course-2023112557"
     }'
     kubernetes.io/elb.enterpriseID: "0"
     kubernetes.io/elb.lb-algorithm: ROUND_ROBIN
@@ -113,3 +113,4 @@ log "5. ??????"
 kubectl get deploy,po,svc,pvc,cm,secret,hpa,job -o wide | tee "$EVIDENCE_DIR/23_final_status.txt"
 
 echo "Evidence directory: $EVIDENCE_DIR"
+

@@ -1,5 +1,5 @@
 # Cloud credentials and cluster access
-cloud-course-2023112554-kubeconfig.yaml
+cloud-course-2023112557-kubeconfig.yaml
 *kubeconfig*.yaml
 *.kubeconfig
 *.pem
@@ -33,3 +33,4 @@ Thumbs.db
 tools/
 
 audit_after_grade/
+

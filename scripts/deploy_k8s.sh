@@ -11,7 +11,7 @@ trap 'rm -rf "${TMP_DIR}"' EXIT
 cp "${ROOT}"/k8s/*.yaml "${TMP_DIR}/"
 find "${TMP_DIR}" -type f -name '*.yaml' -print0 | xargs -0 sed -i \
   -e "s#swr.cn-north-4.myhuaweicloud.com/YOUR_ORG#swr.${SWR_REGION}.myhuaweicloud.com/${SWR_ORG}#g" \
-  -e "s#swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112554#swr.${SWR_REGION}.myhuaweicloud.com/${SWR_ORG}#g" \
+  -e "s#swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112557#swr.${SWR_REGION}.myhuaweicloud.com/${SWR_ORG}#g" \
   -e "s#swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112557#swr.${SWR_REGION}.myhuaweicloud.com/${SWR_ORG}#g"
 
 kubectl apply -f "${TMP_DIR}/01-configmap-secret.yaml"
@@ -27,3 +27,4 @@ kubectl rollout status deploy/redis --timeout=180s
 kubectl rollout status deploy/backend --timeout=180s
 kubectl rollout status deploy/frontend --timeout=180s
 kubectl get pods,svc,pvc
+

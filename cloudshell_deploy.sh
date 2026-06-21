@@ -103,7 +103,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112554/backend:v1
+          image: swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112557/backend:v1
           ports:
             - containerPort: 5000
           resources:
@@ -175,7 +175,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112554/frontend:v1
+          image: swr.cn-north-4.myhuaweicloud.com/cloud-course-2023112557/frontend:v1
           ports:
             - containerPort: 80
           volumeMounts:
@@ -274,3 +274,4 @@ echo
 kubectl get configmap backend-config frontend-nginx-conf
 echo
 kubectl get hpa
+
